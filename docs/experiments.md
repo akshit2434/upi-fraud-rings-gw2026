@@ -54,6 +54,8 @@ Logs in `logs/`. Newest at the bottom.
 
 | 38 | 13 Nov | per-class probes from v6: `submissions/probe6_<class>.csv` (one class kept, rest legit). class test F1 = 12·score − 0.979 | Sep F1: mule .399, velocity .479, layering .516, sim .389, ATO .361, phishing .441, qr .479, refund .454, cashback .265, loan .381, collusion .354 | pending | Oct predicted rows vs Sep: velocity 263 vs 555, qr 338 vs 499, mule 818 vs 640, cashback 200 vs 121 |
 
+| 39 | 13 Nov | housekeeping (git commit after 559e3a3): FEATURE_VERSION v4 (fix `r_nround_senders_7d` sentinel), version-keyed caches, shared `apply_drop`/`clean_bad`/`apply_relabel`/`xfit_f1`, val cleaning from Jul–Aug-only flags (3 rows differed), preds saved with ids + manifest | – | – | no model run yet on v4 features. Installed catboost 1.2.10, networkx 3.7, optuna 5.0.0 (main env); AutoGluon in `.venv-ag` |
+
 ### LB calibration (13 Nov 12:20)
 - LB tracks **full noisy Sep val** (0.442→0.447, 0.446→0.459), NOT proxy val. Use full Sep val as primary metric.
 - Weights tuned on full val beat proxy-tuned weights on LB (0.459 vs 0.454).

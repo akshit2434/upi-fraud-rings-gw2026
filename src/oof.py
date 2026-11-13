@@ -2,10 +2,10 @@
 Saves /tmp/oof_s<seed>.npy aligned with the cached frame rows (test rows = NaN)."""
 import sys, numpy as np, pandas as pd, lightgbm as lgb, time
 sys.path.insert(0, 'src')
-from features import LABELS
+from features import cache_path, LABELS
 seed = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 K = 4
-X = pd.read_parquet(f'/tmp/feat_s{seed}.parquet')
+X = pd.read_parquet(cache_path(seed))
 meta = X[['_label', '_month', '_is_test', '_txn_id']]
 X = X.drop(columns=['_label', '_month', '_is_test', '_txn_id', 'cat_mismatch', 'ip_rank_month'], errors='ignore')
 lab = meta._label.map({l: i for i, l in enumerate(LABELS)}).fillna(-1).astype(int).values
@@ -13,7 +13,6 @@ conn = pd.read_parquet('data/conn.parquet').set_index('txn_id').conn.reindex(met
 STRUCT = [LABELS.index(c) for c in ['mule_account', 'velocity_bot', 'layering_chain', 'sim_swap', 'account_takeover', 'merchant_collusion', 'fake_cashback']]
 bad = (lab > 0) & ~conn & np.isin(lab, STRUCT)
 tr = (meta._is_test == 0).values
-tr_dates = pd.to_datetime(pd.read_parquet(f'/tmp/feat_s{seed}.parquet', columns=['_txn_id']).shape[0] and None) if False else None
 # week index from the time features (minute-of-day not enough) -> use txn timestamp via df
 from features import load, sample_frame
 trd, te, acc, mer = load(); df = sample_frame(trd, te, seed); assert (df.txn_id.values == meta._txn_id.values).all()

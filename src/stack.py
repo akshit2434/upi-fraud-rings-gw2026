@@ -6,7 +6,7 @@ mode=full: base rows = all train; predict test; writes preds/<name>_*.npy and su
 import sys, os, time, argparse, json
 import numpy as np, pandas as pd, lightgbm as lgb
 sys.path.insert(0, 'src')
-from features import load, build_features, sample_frame, neighbour_feats, LABELS
+from features import cache_path, load, build_features, sample_frame, neighbour_feats, LABELS
 from common import macro_f1, tune_weights
 
 ap = argparse.ArgumentParser()
@@ -38,7 +38,7 @@ def fit(X, y, mask, it, seed):
 
 tr, te, acc, mer = load()
 df = sample_frame(tr, te, args.seed)
-cache = f'/tmp/feat_s{args.seed}.parquet'
+cache = cache_path(args.seed)
 X = pd.read_parquet(cache).drop(columns=['_label', '_month', '_is_test', '_txn_id', 'cat_mismatch'], errors='ignore')
 drop = [c for c in args.drop.split(',') if c]
 X = X.drop(columns=[c for c in drop if c in X.columns])

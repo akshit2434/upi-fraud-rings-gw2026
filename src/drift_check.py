@@ -3,9 +3,9 @@ score Sep (labelled) and Oct test, take the top-K most-fraud-like rows per predi
 features' means there vs among low-risk rows, Sep vs Oct."""
 import sys, numpy as np, pandas as pd, lightgbm as lgb
 sys.path.insert(0, 'src')
-from features import LABELS
+from features import cache_path, LABELS
 PROBE = ['ip_rank_month', 'qr_vpa_mismatch', 'qr_checked', 'new_payee', 'pin_retries', 'login_to_txn_sec', 'app', 'device_age_days', 'sim_age_hours', 'away_from_home', 'amt_rank_month']
-X = pd.read_parquet('/tmp/feat_s0.parquet')
+X = pd.read_parquet(cache_path(0))
 meta = X[['_label', '_month', '_is_test', '_txn_id']]; X = X.drop(columns=['_label', '_month', '_is_test', '_txn_id', 'cat_mismatch'], errors='ignore')
 lab = meta._label.map({l: i for i, l in enumerate(LABELS)})
 conn = pd.read_parquet('data/conn.parquet').set_index('txn_id').conn.reindex(meta._txn_id.values).fillna(False).values.astype(bool)

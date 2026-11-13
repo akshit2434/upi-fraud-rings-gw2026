@@ -19,6 +19,11 @@ LABELS = ['legit', 'mule_account', 'velocity_bot', 'layering_chain', 'sim_swap',
           'phishing_collect', 'qr_swap', 'refund_abuse', 'fake_cashback', 'loan_app_extortion',
           'merchant_collusion']
 SAMPLE_RATE = 0.51
+# Bump whenever build_features/neighbour_feats semantics change; caches are keyed by it.
+# v3: features used for submissions up to v6_R1_bag (LB 0.4685). v4: r_nround_senders_7d sentinel fix.
+FEATURE_VERSION = 'v4'
+META = ['_label', '_month', '_is_test', '_txn_id']
+DEFAULT_DROP = ['cat_mismatch', 'ip_rank_month']  # cat_mismatch is constant; ip_rank_month loses its signal in Oct (exp #15)
 H, D = 3600, 86400
 CAP = D  # cap for time-to-event features
 
@@ -325,7 +330,11 @@ def build_features(df, acc, mer):
     F['r2_7d_n'] = (b_ - a_) - 1.0
     F['r2_7d_round_share'] = F['r2_7d_round'] / (F['r2_7d_n'] + 1)
     F['p2_7d_round_share_of_r'] = F['p2_7d_round'] / (F['r2_7d_round'] + 1)
-    F['r_nround_senders_7d'] = distinct_window(r, t, np.where(rnd > 0, s, -1), -7 * D, 7 * D)
+    # distinct round-amount senders to r within +-7d. Non-round rows map to sentinel -1, which distinct_window
+    # counts as one extra value whenever any non-round row is in the window -> subtract it (v4 fix).
+    raw = distinct_window(r, t, np.where(rnd > 0, s, -1), -7 * D, 7 * D)
+    nonround_in_win = (F['r2_7d_n'] + 1) - (F['r2_7d_round'] + rnd)  # window rows incl. self minus round rows incl. self
+    F['r_nround_senders_7d'] = raw - (nonround_in_win > 0)
     # tiny credit from this receiver to this sender within +-7d (cashback lure), and from anyone in next 1d before
     dt, v = by_p.nxt(rv, t, 'amt', cap=7 * D)
     F['rev_next_dt'] = np.where(has_rev, dt, np.nan)
@@ -369,3 +378,31 @@ def neighbour_feats(df, P, prefix='nb'):
             if v == 'fraud':
                 F[f'{prefix}_{nm}_fraudmean'] = np.where(cnt > 0, sm / np.maximum(cnt, 1), np.nan)
     return pd.DataFrame(F).astype(np.float32)
+
+
+def cache_path(seed, ver=None):
+    return f'/tmp/feat_{ver or FEATURE_VERSION}_s{seed}.parquet'
+
+
+def load_cached(seed, ver=None, build_if_missing=True):
+    """Feature matrix + meta for a sampling seed, from a version-keyed cache (built and saved if missing)."""
+    import os
+    path = cache_path(seed, ver)
+    if not os.path.exists(path):
+        if not build_if_missing or (ver and ver != FEATURE_VERSION):
+            raise FileNotFoundError(path)
+        tr, te, acc, mer = load()
+        df = sample_frame(tr, te, seed)
+        X = build_features(df, acc, mer)
+        X['_label'] = df.label.values; X['_month'] = df.timestamp.str[:7].values
+        X['_is_test'] = df._is_test.values; X['_txn_id'] = df.txn_id.values
+        X.to_parquet(path)
+    X = pd.read_parquet(path)
+    return X.drop(columns=META), X[META].reset_index(drop=True)
+
+
+def apply_drop(X, spec='', default=True):
+    """Drop columns by comma-separated names; a trailing '*' is a prefix wildcard. Same semantics everywhere."""
+    names = [c for c in (spec.split(',') if isinstance(spec, str) else list(spec)) if c] + (DEFAULT_DROP if default else [])
+    cols = [c for c in X.columns if any(c == d or (d.endswith('*') and c.startswith(d[:-1])) for d in names)]
+    return X.drop(columns=cols)

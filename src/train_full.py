@@ -1,14 +1,10 @@
-"""Train on all training months and predict test. Averages over sampling seeds.
-
-Writes probabilities to preds/<name>_test_P.npy and a submission using per-class weights
-(tuned on the Sep validation run from exp.py, passed via --weights_from <P_file>).
-"""
-import sys, os, time, argparse
+"""Train on ALL training months for each sampling seed, predict test, average over seeds.
+Writes preds/<name>_test_P.npy + preds/<name>_test_ids.csv (+ preds/<name>_manifest.json). Use make_sub.py for the CSV."""
+import sys, os, time, json, argparse
 import numpy as np, pandas as pd, lightgbm as lgb
-
 sys.path.insert(0, 'src')
-from features import load, build_features, sample_frame, LABELS
-from common import tune_weights, macro_f1
+from features import LABELS, FEATURE_VERSION, load_cached, apply_drop
+from common import get_conn, clean_bad, apply_relabel
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--name', required=True)
@@ -17,76 +13,38 @@ ap.add_argument('--iters', type=int, default=400)
 ap.add_argument('--lr', type=float, default=0.05)
 ap.add_argument('--leaves', type=int, default=63)
 ap.add_argument('--mcs', type=int, default=40)
+ap.add_argument('--ff', type=float, default=0.7)
+ap.add_argument('--l2', type=float, default=1.0)
 ap.add_argument('--legit_keep', type=float, default=0.25)
 ap.add_argument('--drop', default='')
-ap.add_argument('--val_P', default='')  # validation probs to tune class weights on
-ap.add_argument('--clean', default='none')
-ap.add_argument('--wmode', default='full,proxy')
+ap.add_argument('--clean', default='iso7')
 ap.add_argument('--relabel', default='')
-args = ap.parse_args()
-os.makedirs('preds', exist_ok=True); os.makedirs('submissions', exist_ok=True)
-
-tr, te, acc, mer = load()
-Ps = []
-for seed in [int(s) for s in args.seeds.split(',')]:
+ap.add_argument('--threads', type=int, default=10)
+a = ap.parse_args()
+os.makedirs('preds', exist_ok=True)
+Ps, ids0 = [], None
+for seed in [int(s) for s in a.seeds.split(',')]:
     t0 = time.time()
-    cache = f'/tmp/feat_s{seed}.parquet'
-    if not os.path.exists(cache):
-        df = sample_frame(tr, te, seed)
-        X = build_features(df, acc, mer)
-        X['_label'] = df.label.values; X['_month'] = df.timestamp.str[:7].values
-        X['_is_test'] = df._is_test.values; X['_txn_id'] = df.txn_id.values
-        X.to_parquet(cache)
-    X = pd.read_parquet(cache)
-    meta = X[['_label', '_month', '_is_test', '_txn_id']]
-    X = X.drop(columns=['_label', '_month', '_is_test', '_txn_id', 'cat_mismatch'], errors='ignore')
-    drop = [c for c in args.drop.split(',') if c]
-    X = X.drop(columns=[c for c in drop if c in X.columns])
-    lab = meta._label.map({l: i for i, l in enumerate(LABELS)})
-    trn = meta._is_test == 0
+    X, meta = load_cached(seed)
+    X = apply_drop(X, a.drop)
+    ids = meta._txn_id.values
+    lab = meta._label.map({l: i for i, l in enumerate(LABELS)}).fillna(-1).astype(int).values
+    trn = (meta._is_test == 0).values
+    bad = clean_bad(lab, get_conn(ids), a.clean)
+    lab = apply_relabel(lab, ids, a.relabel, mask=trn)
     rng = np.random.default_rng(seed)
-    conn = pd.read_parquet('data/conn.parquet').set_index('txn_id').conn.reindex(meta._txn_id.values).fillna(False).values.astype(bool)
-    STRUCT = [LABELS.index(c) for c in ['mule_account', 'velocity_bot', 'layering_chain', 'sim_swap', 'account_takeover', 'merchant_collusion', 'fake_cashback']]
-    bad = np.zeros(len(X), bool)
-    if args.clean == 'iso7':
-        bad = (lab.fillna(0).values > 0) & ~conn & np.isin(lab.fillna(0).values, STRUCT)
-    if args.relabel:
-        rl = pd.read_parquet(args.relabel).set_index('txn_id').new_label.reindex(meta._txn_id.values).values
-        hasr = ~np.isnan(rl); lab = lab.where(~hasr, rl)
-        print('relabelled', int(hasr.sum()), flush=True)
-    print('clean', args.clean, 'dropped', int((bad & trn.values).sum()), flush=True)
-    mask = trn & ~bad & ((lab != 0) | (rng.random(len(X)) < args.legit_keep))
-    yl = lab[mask].values
-    w = np.where(yl == 0, 1 / args.legit_keep, 1.0)
-    params = dict(objective='multiclass', num_class=len(LABELS), learning_rate=args.lr, num_leaves=args.leaves,
-                  min_child_samples=args.mcs, feature_fraction=0.7, bagging_fraction=0.8, bagging_freq=1,
-                  lambda_l2=1.0, verbose=-1, num_threads=10, seed=seed)
-    m = lgb.train(params, lgb.Dataset(X[mask], yl, weight=w), args.iters)
-    tmask = (meta._is_test == 1).values
-    P = m.predict(X[tmask])
-    ids = meta._txn_id[tmask].values
-    order = np.argsort(ids)
-    Ps.append((ids[order], P[order]))
-    print('seed', seed, 'done', round(time.time() - t0), 's', flush=True)
-
-ids = Ps[0][0]
-P = np.mean([p for _, p in Ps], axis=0)
-np.save(f'preds/{args.name}_test_P.npy', P); pd.Series(ids).to_csv(f'preds/{args.name}_test_ids.csv', index=False)
-
-te = pd.read_csv('data/upi-fraud-rings/test.csv', usecols=['txn_id'])
-meta0 = pd.read_parquet('/tmp/feat_s0.parquet', columns=['_month', '_is_test', '_txn_id'])
-vids = meta0._txn_id[(meta0._is_test == 0) & (meta0._month == '2026-09')].values
-vconn = pd.read_parquet('data/conn.parquet').set_index('txn_id').conn.reindex(vids).fillna(False).values.astype(bool)
-for wm in args.wmode.split(','):
-    wts = np.ones(len(LABELS))
-    if args.val_P:
-        Pv = np.load(args.val_P); yv = np.load('/tmp/y_val.npy'); assert len(Pv) == len(yv) == len(vids)
-        keep = (yv == 0) | vconn if wm == 'proxy' else np.ones(len(yv), bool)
-        wts, f = tune_weights(Pv[keep], yv[keep], iters=3)
-        print(wm, 'val tuned F1', round(f, 4), 'weights', np.round(wts, 2).tolist())
-    np.save(f'preds/{args.name}_{wm}_weights.npy', wts)
-    pred = pd.Series(np.array(LABELS)[(P * wts).argmax(1)], index=ids)
-    sub = pd.DataFrame({'id': te.txn_id, 'label': pred.reindex(te.txn_id).values})
-    assert sub.label.notna().all() and len(sub) == len(te)
-    sub.to_csv(f'submissions/{args.name}_{wm}.csv', index=False)
-    print(wm, 'fraud share', round((sub.label != 'legit').mean(), 4), sub.label.value_counts().to_dict())
+    mask = trn & ~bad & ((lab != 0) | (rng.random(len(X)) < a.legit_keep))
+    w = np.where(lab[mask] == 0, 1 / a.legit_keep, 1.0)
+    params = dict(objective='multiclass', num_class=12, learning_rate=a.lr, num_leaves=a.leaves, min_child_samples=a.mcs,
+                  feature_fraction=a.ff, bagging_fraction=0.8, bagging_freq=1, lambda_l2=a.l2, verbose=-1, num_threads=a.threads, seed=seed)
+    m = lgb.train(params, lgb.Dataset(X[mask], lab[mask], weight=w), a.iters)
+    tm = (meta._is_test == 1).values
+    tid = ids[tm]; o = np.argsort(tid)
+    if ids0 is None: ids0 = tid[o]
+    assert (tid[o] == ids0).all()
+    Ps.append(m.predict(X[tm])[o])
+    print('seed', seed, 'dropped', int((bad & trn).sum()), 'done', round(time.time() - t0), 's', flush=True)
+P = np.mean(Ps, axis=0)
+np.save(f'preds/{a.name}_test_P.npy', P); pd.Series(ids0).to_csv(f'preds/{a.name}_test_ids.csv', index=False)
+json.dump(dict(vars(a), feature_version=FEATURE_VERSION, classes=LABELS, columns=list(X.columns)), open(f'preds/{a.name}_manifest.json', 'w'), indent=1)
+print('saved', a.name)

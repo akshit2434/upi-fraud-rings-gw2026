@@ -2,9 +2,9 @@
 R1: confident type swaps among {sim<->ato, mule<->layering, velocity->mule}. R2: R1 + legit rows with OOF max fraud prob > 0.8."""
 import sys, numpy as np, pandas as pd
 sys.path.insert(0, 'src')
-from features import LABELS
+from features import cache_path, LABELS
 L = {l: i for i, l in enumerate(LABELS)}
-X = pd.read_parquet('/tmp/feat_s0.parquet', columns=['_label', '_is_test', '_txn_id'])
+X = pd.read_parquet(cache_path(0), columns=['_label', '_is_test', '_txn_id'])
 O = np.load('/tmp/oof_s0.npy'); tr = (X._is_test == 0).values
 y = X._label.map(L).fillna(-1).astype(int).values
 thr = np.array([np.nanmean(O[tr & (y == k), k]) for k in range(12)])
