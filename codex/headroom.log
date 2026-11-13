@@ -1,0 +1,29 @@
+base 0.45132179213368967
+full_context_connected fraud rows 3105 missed_as_legit 777 wrong_fraud_type 339 oracle_f1 0.5672390338923132
+                    count      mean
+label                              
+account_takeover      253  0.691700
+fake_cashback         119  0.537815
+layering_chain        495  0.820202
+loan_app_extortion     34  0.794118
+merchant_collusion    119  0.773109
+mule_account          729  0.622771
+phishing_collect      176  0.278409
+qr_swap               170  0.458824
+refund_abuse          100  0.440000
+sim_swap              260  0.546154
+velocity_bot          650  0.704615
+sampled_context_connected fraud rows 2383 missed_as_legit 490 wrong_fraud_type 237 oracle_f1 0.5225997348025047
+                    count      mean
+label                              
+account_takeover      185  0.772973
+fake_cashback          74  0.729730
+layering_chain        323  0.839009
+loan_app_extortion     14  1.000000
+merchant_collusion     88  0.852273
+mule_account          629  0.691574
+phishing_collect       93  0.182796
+qr_swap                96  0.395833
+refund_abuse           62  0.467742
+sim_swap              199  0.613065
+velocity_bot          620  0.738710

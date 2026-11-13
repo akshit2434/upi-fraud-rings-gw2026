@@ -1,0 +1,75 @@
+/Users/akshit2434/.t3/scratch/2026-11-13-https-hack4hack-com-hackathons-ml-a175759f/src/features.py:252: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  X['rev_cnt_all'] = np.where(has_rev, c, 0)
+/Users/akshit2434/.t3/scratch/2026-11-13-https-hack4hack-com-hackathons-ml-a175759f/src/features.py:253: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  X['rev_small_all'] = np.where(has_rev, by_rpair.wsum('small', a_, b_), 0)
+/Users/akshit2434/.t3/scratch/2026-11-13-https-hack4hack-com-hackathons-ml-a175759f/src/features.py:257: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  X['s_last_tiny_in_dt'] = dt
+/Users/akshit2434/.t3/scratch/2026-11-13-https-hack4hack-com-hackathons-ml-a175759f/src/features.py:260: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  X['s_round_cnt_to_r'] = df.assign(_r=roundamt).groupby(['sender_id', 'receiver_id'])._r.transform('sum').values
+/Users/akshit2434/.t3/scratch/2026-11-13-https-hack4hack-com-hackathons-ml-a175759f/src/features.py:263: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  X['amt_vs_r_median'] = amt / df.groupby('receiver_id').amount.transform('median').values
+/Users/akshit2434/.t3/scratch/2026-11-13-https-hack4hack-com-hackathons-ml-a175759f/src/features.py:267: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  X['s_night_share'] = pd.Series(night).groupby(s).transform('mean').values
+features (1058023, 106) 5 s
+best_iter 38 argmax macroF1 0.4284
+tuned macroF1 0.4507 weights [1.0, 1.57, 0.55, 5.19, 1.16, 1.57, 5.19, 9.46, 1.82, 10.99, 8.14, 17.22]
+                    precision    recall  f1-score   support
+
+             legit      0.976     0.998     0.987    250621
+      mule_account      0.764     0.261     0.389      1714
+      velocity_bot      0.823     0.337     0.478      1357
+    layering_chain      0.740     0.389     0.510      1101
+          sim_swap      0.635     0.241     0.350       671
+  account_takeover      0.594     0.226     0.327       669
+  phishing_collect      0.649     0.304     0.415      1107
+           qr_swap      0.747     0.354     0.480      1170
+      refund_abuse      0.819     0.326     0.466       543
+     fake_cashback      0.500     0.195     0.281       446
+loan_app_extortion      0.789     0.244     0.372       308
+merchant_collusion      0.708     0.236     0.354       432
+
+          accuracy                          0.972    260139
+         macro avg      0.729     0.343     0.451    260139
+      weighted avg      0.967     0.972     0.966    260139
+
+amt_over_bal               0.1280
+d_cnt_1h                   0.1251
+log_amount                 0.0559
+merchant_age_days          0.0335
+qr_vpa_mismatch            0.0335
+s_ref_30d                  0.0304
+amt_cents                  0.0267
+r_cnt_1d                   0.0266
+amt_is_int                 0.0260
+ip_rank_month              0.0257
+recv_acc_age_days          0.0232
+sim_age_hours              0.0232
+amount                     0.0217
+r_newp_share_all           0.0190
+r_next_out_dt              0.0153
+device_age_days            0.0151
+txn_type                   0.0148
+s_amt_1d                   0.0148
+r_newp_1d                  0.0144
+merchant_category          0.0140
+r_cnt_7d                   0.0124
+amt_vs_s_mean              0.0123
+minute_of_day              0.0118
+s_dt_next                  0.0118
+bal_after                  0.0110
+r_round_7d                 0.0102
+login_to_txn_sec           0.0098
+sender_account_age_days    0.0097
+new_payee                  0.0092
+r_round_1d                 0.0087
+balance_before             0.0081
+s_amt_all                  0.0079
+s_dt_prev                  0.0078
+s_round_cnt_to_r           0.0077
+amt_just_under             0.0077
+amt_vs_r_median            0.0074
+amt_round500               0.0070
+d_dt_prev                  0.0068
+r_next_out_ratio           0.0068
+r_cnt_all                  0.0067
+total 47 s

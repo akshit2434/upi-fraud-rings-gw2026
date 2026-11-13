@@ -1,0 +1,14 @@
+                                        0                     1
+set                                   Sep                   Oct
+top_frac_true_fraud              0.576923                   NaN
+ip_rank_month              0.686 vs 0.496        0.531 vs 0.499
+qr_vpa_mismatch            0.002 vs 0.003        0.009 vs 0.003
+qr_checked                 0.360 vs 0.353        0.347 vs 0.354
+new_payee                  0.346 vs 0.229        0.326 vs 0.229
+pin_retries                0.173 vs 0.119        0.170 vs 0.119
+login_to_txn_sec         53.738 vs 66.931      58.028 vs 66.814
+app                        1.266 vs 1.244        1.260 vs 1.240
+device_age_days        220.594 vs 296.754    268.206 vs 306.138
+sim_age_hours        8415.350 vs 8955.887  8157.925 vs 8926.431
+away_from_home             0.127 vs 0.068        0.138 vs 0.067
+amt_rank_month             0.646 vs 0.494        0.675 vs 0.497

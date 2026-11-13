@@ -1,0 +1,6 @@
+cleaning iso7 removed 7674 train rows
+hp_lk05 {"seed": 0, "drop": "ip_rank_month", "keep_only": "", "lr": 0.05, "leaves": 63, "mcs": 40, "ff": 0.7, "l2": 1.0, "legit_keep": 0.5, "iters": "400", "rebuild": false, "cw": "none", "tag": "hp_lk05", "clean": "iso7"} | F1 (argmax, tuned) by iter: {400: {'full': (0.4324, 0.4493), 'proxy': (0.6295, 0.6486), 'full_w_proxy': 0.4419}} | 125s
+cleaning iso7 removed 7674 train rows
+hp_l31 {"seed": 0, "drop": "ip_rank_month", "keep_only": "", "lr": 0.05, "leaves": 31, "mcs": 100, "ff": 0.7, "l2": 1.0, "legit_keep": 0.25, "iters": "400", "rebuild": false, "cw": "none", "tag": "hp_l31", "clean": "iso7"} | F1 (argmax, tuned) by iter: {400: {'full': (0.4314, 0.4459), 'proxy': (0.6263, 0.645), 'full_w_proxy': 0.4403}} | 70s
+cleaning iso7 removed 7674 train rows
+hp_ff04 {"seed": 0, "drop": "ip_rank_month", "keep_only": "", "lr": 0.05, "leaves": 63, "mcs": 40, "ff": 0.4, "l2": 1.0, "legit_keep": 0.25, "iters": "400", "rebuild": false, "cw": "none", "tag": "hp_ff04", "clean": "iso7"} | F1 (argmax, tuned) by iter: {400: {'full': (0.4385, 0.4514), 'proxy': (0.6421, 0.6567), 'full_w_proxy': 0.4449}} | 118s

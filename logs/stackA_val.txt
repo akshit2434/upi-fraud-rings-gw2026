@@ -1,0 +1,35 @@
+stage1 fold 0 58 s
+stage1 fold 1 113 s
+stage1 fold 2 169 s
+stage1 fold 3 226 s
+stage1 done 322 s
+stage1 Sep F1 argmax 0.4289 tuned 0.4353
+p1_6                       0.0531
+p1_3                       0.0510
+p1_7                       0.0475
+p1_5                       0.0390
+p1_1                       0.0387
+d_n_1h                     0.0374
+p1_8                       0.0271
+nb_r1d_fraudmean           0.0229
+p1_4                       0.0161
+nb_p7d_c11                 0.0105
+p1_9                       0.0101
+p1_10                      0.0097
+ip_rank_month              0.0096
+p1_11                      0.0095
+sim_age_hours              0.0093
+p1_2                       0.0091
+minute_of_day              0.0087
+device_age_days            0.0086
+sender_account_age_days    0.0086
+login_to_txn_sec           0.0084
+merchant_age_days          0.0079
+nb_p7d_c10                 0.0077
+nb_p7d_c2                  0.0077
+nb_p7d_c6                  0.0076
+nb_p7d_c1                  0.0076
+stage2 it 100 Sep F1 argmax 0.4283 tuned 0.438
+stage2 it 200 Sep F1 argmax 0.4285 tuned 0.437
+stage2 it 400 Sep F1 argmax 0.4304 tuned 0.4403
+total 568 s

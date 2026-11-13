@@ -1,0 +1,11 @@
+.venv/
+.venv-ag/
+data/
+preds/
+submissions/
+upi-fraud-rings-gradient-wars.zip
+__pycache__/
+codex/numba_cache/
+codex/*.npy
+codex/*.parquet
+AutogluonModels/

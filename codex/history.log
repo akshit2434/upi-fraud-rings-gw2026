@@ -1,0 +1,11 @@
+mule_account isolated_n 1947 class_history_auc 0.45283126118520456 isolated_hit 0.3569594247560349 legit_hit 0.46527521955488615
+velocity_bot isolated_n 1405 class_history_auc 0.456034794012261 isolated_hit 0.3295373665480427 legit_hit 0.4299266284714095
+layering_chain isolated_n 1214 class_history_auc 0.46116265557565667 isolated_hit 0.328665568369028 legit_hit 0.41827266528946644
+sim_swap isolated_n 780 class_history_auc 0.45780149347160654 isolated_hit 0.3 legit_hit 0.38958755228103026
+account_takeover isolated_n 793 class_history_auc 0.4795337332157975 isolated_hit 0.33921815889029006 legit_hit 0.3917876805031191
+phishing_collect isolated_n 1823 class_history_auc 0.5291891027736678 isolated_hit 0.4092155787164015 legit_hit 0.4230087414900221
+qr_swap isolated_n 1963 class_history_auc 0.4573930489452513 isolated_hit 0.30056036678553233 legit_hit 0.4285650320046404
+refund_abuse isolated_n 884 class_history_auc 0.48168424290695305 isolated_hit 0.31221719457013575 legit_hit 0.3776974976339972
+fake_cashback isolated_n 611 class_history_auc 0.48672028812512325 isolated_hit 0.309328968903437 legit_hit 0.35822605757782366
+loan_app_extortion isolated_n 568 class_history_auc 0.5059213278797619 isolated_hit 0.3345070422535211 legit_hit 0.35223625428679006
+merchant_collusion isolated_n 584 class_history_auc 0.44991028600997746 isolated_hit 0.2602739726027397 legit_hit 0.3617063714166506

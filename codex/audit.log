@@ -1,0 +1,27 @@
+cache_alignment 1058023 True columns 159
+duplicate_ids_train 0 test 0 overlap 0
+shared_y_equals_cache True
+month stats: rows, distinct senders, repeat sender share, non-own device share, QR mismatch, ref
+jul 527065 218388 0.8005426275696546 0.08189502243556297 0.001986472256742527 0.006815098706990599
+aug 526852 218450 0.8012307061565677 0.08076651507444216 0.0018923720513540805 0.007038029655387091
+sep 509996 215256 0.7946905465925223 0.08145750162746375 0.001956878093161515 0.007200056471031145
+sep51 260139 147901 0.647092515924179 0.08127193538838852 0.0019220493659159142 0.007173088233598191
+oct 260536 148182 0.6464020327325206 0.08121718303804465 0.0014546934012957902 0.006951054748671969
+cat mismatch train by label
+train                     mean   count
+label                           
+account_takeover     0.0    1608
+fake_cashback        0.0    1064
+layering_chain       0.0    2555
+legit                0.0  964480
+loan_app_extortion   0.0    1389
+merchant_collusion   0.0    1780
+mule_account         0.0    4516
+phishing_collect     0.0    2651
+qr_swap              0.0    3865
+refund_abuse         0.0    2532
+sim_swap             0.0    1615
+velocity_bot         0.0    5982
+test 0.0
+upper_bound_train_rows_with_sep_label_connection 7
+isolated fraud assumption: AUC near .55 is evidence of weak current features, NOT proof of generator origin or irreducibility

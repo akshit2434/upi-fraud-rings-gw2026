@@ -1,0 +1,21 @@
+starter val macro-F1: 0.2851
+                    precision    recall  f1-score   support
+
+  account_takeover      0.373     0.132     0.195      1280
+     fake_cashback      0.139     0.061     0.085       831
+    layering_chain      0.560     0.182     0.275      2182
+             legit      0.972     0.997     0.984    491335
+loan_app_extortion      0.336     0.178     0.233       645
+merchant_collusion      0.115     0.026     0.043       841
+      mule_account      0.385     0.088     0.143      3367
+  phishing_collect      0.498     0.198     0.284      2162
+           qr_swap      0.661     0.235     0.347      2352
+      refund_abuse      0.496     0.184     0.269      1075
+          sim_swap      0.390     0.159     0.225      1267
+      velocity_bot      0.676     0.226     0.339      2659
+
+          accuracy                          0.966    509996
+         macro avg      0.467     0.222     0.285    509996
+      weighted avg      0.954     0.966     0.957    509996
+
+{'legit': 257647, 'phishing_collect': 426, 'qr_swap': 406, 'layering_chain': 390, 'mule_account': 336, 'velocity_bot': 273, 'account_takeover': 264, 'sim_swap': 259, 'refund_abuse': 213, 'fake_cashback': 136, 'merchant_collusion': 132, 'loan_app_extortion': 100}
