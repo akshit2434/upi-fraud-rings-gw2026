@@ -72,3 +72,16 @@ Logs in `logs/`. Newest at the bottom.
 4. Label cleaning: relabel legit rows inside strong same-class bursts; optionally down-weight isolated legit-looking fraud rows.
    Can only be judged on LB (val labels are noisy).
 5. Multi-seed bagging (different 51% samples), then CatBoost/XGB blend.
+
+| 40 | 13 Nov 23:10 | AutoGluon installed in `.venv-ag` (`autogluon.tabular[lightgbm,catboost,xgboost]`, no torch). v4 caches built (s0–3) | – | – | – |
+| 41 | 13 Nov 23:15 | v6 Sep diagnostics: confusion + global fraud scale ×1…×6, weights tuned on R1/R2-denoised Sep | scale: .4588→.4566, share 1.39→1.52% only | – | probs bimodal; thresholds are no lever. R2-tuned weights don't change test share (1.38%) |
+| 42 | 13 Nov 23:20 | leak checks: txn_id hex, sender/receiver/device numeric ids, leave-one-out entity fraud share, global time clustering of isolated fraud | AUC ≈ .50 all; isolated fraud ±5m/1h/1d same-class density = legit | – | **negative**: isolated struct fraud is temporally uniform, no id/entity signal |
+| 43 | 13 Nov 23:25 | oracle on Sep: perfect on full-density-connected fraud only | 0.4876 (per class mule .60 velocity .65 layering .62 sim .56 ATO .55) | – | our .4588 already includes single-row gains |
+| 44 | 13 Nov 23:35 | v4 features, R1 + iso7 + noip, seed 0 (`exp.py --tag v4base`) | argmax .4466 · same .4570 · **x-fit .4521** (v3 .4513) | – | v4 fix neutral-positive |
+| 45 | 13 Nov 23:45 | graph/event features (`src/graph_feats.py`: union-find on device≤30m / sender≤1h / P2P-receiver≤1h / money-hop≤1h; comp size, entities, composition, hop depth fwd/bwd) | same .4595 · x-fit .4519 | – | **neutral** (existing windows already capture it) |
+| 46 | 13 Nov 23:50 | event smoothing of fraud-type probs over the same components (`src/smooth.py`, legit prob kept) | α=.5: x-fit noisy .4521→.4537, R1-denoised .4658→.4692 | – | small consistent + → use α=.5 |
+| 47 | 14 Nov 00:05 | CatBoost (800 it, lr .08, depth 7) same masks; blend with LGB | cat x-fit .4478; 50/50 blend **.4547**, 75/25 .4555 | – | +0.003 over LGB |
+| 48 | 14 Nov 00:10 | profile isolated vs connected per class (raw) | isolated phishing/qr/refund/loan/cashback: old-app share .23–.33 (fraud-like, legit .15); isolated mule .16 | – | single-row classes' isolated rows are real fraud; struct-class isolated rows look legit-generated |
+| 49 | 14 Nov 01:00 | full v7 pipeline (`logs/run_v7.sh`, `src/exp2.py`): LGB frames 0–3, CatBoost frames 0–1, AutoGluon medium (`src/ag_export.py`, `src/ag_run.py`; XGB best, RF skipped for RAM) | single x-fit: lgb s1 .4473 s2 .4454 s3 .4489, cat s1 .4389 | – | seed spread ±0.003 |
+| 50 | 14 Nov 02:30 | **stable comparison: mean x-fit over 5 split seeds** (`src/blend_eval.py`; `macro_f1` now numpy-fast, identical to sklearn) | v6 .4514 · LGB bag .4515 · +smooth .4516 · L+C .4513 · .4L+.3C+.3A .4532 · **(L+C+A)/3 smoothed .4537** | – | **single-split x-fit gains of ±0.003 were noise** (smoothing +0.0016 vanished). Best blend only +0.0023 over v6 → below the +0.005 upload bar |
+| 51 | 14 Nov 02:40 | candidate `submissions/v7_blend.csv` (`src/make_v7.py`) | 5-split x-fit .4537 | not uploaded | agrees with v6 on 99.92% of rows (216 fraud rows differ); fraud share 1.39% |

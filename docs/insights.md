@@ -94,3 +94,11 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
 - Public test fraud share ≈ 4.1% (train labels 3.66%). Not a hidden-unreported-fraud scenario; we predict 1.39%.
 - Our LB 0.4685 ⇒ mean fraud-class F1 ≈ 0.42; leaders 0.547 ⇒ ≈ 0.51. Gap is spread across classes or concentrated in Oct-drifted classes.
 - Relabel R1 + 4-seed bag: +0.0022 on LB (x-fit val predicted +0.0036).
+
+## Night of 13→14 Nov (exps #40–51)
+- Single-split x-fit has ±0.003 noise; use the 5-split mean (`src/blend_eval.py`) before believing any gain < 0.005.
+- Model family / ensembling (LGB bag, CatBoost, AutoGluon-XGB), graph-event features and event smoothing are all ≤ +0.0023 → the
+  current feature set is saturated; LB 0.50 needs new signal, not modelling.
+- Oracle bound: perfect on full-density-connected fraud alone = 0.488 Sep. Isolated struct-class fraud (52–71% of those classes) is
+  temporally uniform, id-free, entity-history-free and has legit's app-version mix → unlearnable from the provided columns.
+- Isolated phishing/qr/refund/loan/cashback carry fraud-like profiles (old-app 23–33%, just-under amounts 1999/4999/9999) → remaining headroom.

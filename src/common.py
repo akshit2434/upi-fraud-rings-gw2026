@@ -5,7 +5,11 @@ from features import LABELS
 
 
 def macro_f1(y, pred):
-    return f1_score(y, pred, average='macro', labels=list(range(len(LABELS))))
+    """Macro-F1 over all 12 labels (same as sklearn f1_score(average='macro', labels=range(12)), numpy-fast)."""
+    k = len(LABELS)
+    cm = np.bincount(np.asarray(y) * k + np.asarray(pred), minlength=k * k).reshape(k, k)
+    tp = np.diag(cm).astype(float); den = cm.sum(0) + cm.sum(1)
+    return float(np.mean(np.where(den > 0, 2 * tp / np.maximum(den, 1), 0.0)))
 
 
 def tune_weights(P, y, iters=3, grid=None):
