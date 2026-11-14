@@ -110,3 +110,10 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
 - Isolated struct fraud is injected at a flat 1.31–1.32% of rows every month, has legit's feature/app-version profile, and is very likely
   present (as fraud) in test. No column separates it (combined AUC .566).
 - EM prior shift Sep→Oct: velocity ×0.43, mule ×1.42, refund ×1.6, cashback ×2.35, loan ×4.1 — but bimodal probs mean re-weighting moves ~0 rows.
+
+## Device-ID allocation artefact (exp #66) — corrects the 'device blocks don't transfer' note above
+- Device IDs are allocated sequentially per period: own phones (= account number), then a FRAUD phone block, then legit second
+  phones (each used once). Train block DV0420000–0428454 is 88% fraud with sub-blocks in fixed class order
+  (velocity, mule, velocity, layering, sim, ATO, phishing, qr, refund, cashback, loan, collusion). October's block is
+  DV0473632–0474551 (564 test rows). Rows there that look legit are the 'injected' fraud; the device number is the only tell.
+- October adaptation: QR→P2P with blank qr_vpa_mismatch (140 rows, never in train) are qr_swap — LB +0.0098.

@@ -1,0 +1,20 @@
+from base import *
+d=load(); d=d[d.grp!='aug'].copy()
+pd.set_option('display.width',250,'display.max_columns',30,'display.max_rows',200)
+d['lab']=np.where(d.grp=='oct',d.v9,d.label)
+p=d[d.receiver_type=='P2P'].copy()
+p['t']=(p.ts-pd.Timestamp('2026-07-01')).dt.total_seconds()
+# receiver activity: distinct senders in +-12h window approx via day bucket; and out-payment within 24h after
+p['day']=p.ts.dt.floor('D')
+ns=p.groupby(['grp','receiver_id','day']).sender_id.nunique().rename('ns_day').reset_index()
+p=p.merge(ns,on=['grp','receiver_id','day'])
+# outgoing from receiver within 24h after incoming (any type)
+out=d[['grp','sender_id','ts','amount']].rename(columns={'sender_id':'receiver_id','ts':'ots','amount':'oamt'})
+out['ot']=(out.ots-pd.Timestamp('2026-07-01')).dt.total_seconds()
+m=p[['txn_id','grp','receiver_id','t']].merge(out[['grp','receiver_id','ot']],on=['grp','receiver_id'])
+m=m[(m.ot>m.t)&(m.ot-m.t<86400)]; nxt=m.groupby('txn_id').ot.min()
+p['out_dt']=p.txn_id.map(nxt)-p.t
+p['ob']=pd.cut(p.out_dt.fillna(1e9),[0,600,3600,6*3600,86400,2e9],labels=['<10m','<1h','<6h','<24h','none']).astype(str)
+t=p.groupby(['grp',p.ns_day.clip(upper=5),'ob']).agg(n=('lab','size'),fr=('lab',lambda s:(s!='legit').mean()),mule=('lab',lambda s:(s=='mule_account').mean()),lay=('lab',lambda s:(s=='layering_chain').mean())).unstack(0)
+print(t.round(2))
+p.to_parquet('mule.parquet')

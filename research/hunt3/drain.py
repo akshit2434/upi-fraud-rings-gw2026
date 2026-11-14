@@ -1,0 +1,11 @@
+from base import *
+d=load(); d=d[d.grp!='aug'].copy(); d['lab']=np.where(d.grp=='oct',d.v9,d.label)
+pd.set_option('display.width',250,'display.max_columns',30,'display.max_rows',300)
+x=d[(d.receiver_type=='P2P')&(d.amt_over_bal>=0.7)&(d.txn_type=='PAY')].copy()
+x['simb']=pd.cut(x.sim_age_hours,[0,24,72,168,720,1e9]).astype(str)
+x['devb']=pd.cut(x.device_age_days,[-1,1,7,30,1e9]).astype(str)
+x['night']=x.hr.isin([0,1,2,3,4,5])
+def agg(g): return g.agg(n=('lab','size'),fr=('lab',lambda s:(s!='legit').mean()),sim=('lab',lambda s:(s=='sim_swap').mean()),ato=('lab',lambda s:(s=='account_takeover').mean()))
+print(agg(x.groupby(['simb','grp'])).unstack(1).round(2))
+print(agg(x.groupby(['devb','away_from_home','grp'])).unstack(2).round(2))
+print(agg(x.groupby(['night','pin_retries','grp'])).unstack(2).round(2))
