@@ -148,3 +148,8 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
 - Device type of Sep fraud: own phone 86–94% for all classes except ATO (70% own, 26% fraud block) and velocity (60% own, 36% block). Fraud device block ≠ "generated": generated mule/layering/etc. live on own phones.
 - Oct velocity_bot calls are 100% on train-block devices reused in Oct (device farms: one device, many senders, integer amounts, login_to_txn 1–6 s, merchant PAY).
 - Ceiling arithmetic: perfect detection + typing of only the flaggable ~4k rows → class recall ≈ .38, F1 ≈ .55, macro ≈ .59. Leaders (0.63) must catch some legit-profile fraud; the 0.54–0.55 pack is consistent with near-perfect generated-fraud typing.
+- `new_payee` is drawn independently of the observed pair history (P(new_payee=1) is .23 whether or not the pair was seen before)
+  → not a usable consistency check. Structural/null-pattern cells and exact-value collisions show nothing for LP rows (exp #97).
+- Ceiling: perfect on all non-LP Sep fraud while calling LP rows legit = .585 Sep macro-F1. Test (4.1% fraud, 43.5 marker rows/10k
+  vs train 47) has the same generated share as Sep, so LB .634 is above that ceiling. Either leaders recover LP rows in a way we have
+  not found (no row/entity/graph/time/ID axis works), or they get typing/precision near-perfect and benefit from public-split noise. Unresolved hypothesis.
