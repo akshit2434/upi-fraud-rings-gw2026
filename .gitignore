@@ -9,3 +9,7 @@ codex/numba_cache/
 codex/*.npy
 codex/*.parquet
 AutogluonModels/
+.DS_Store
+codex/val_ids.csv
+codex/research2_bursts_*.csv
+logs/*.log
