@@ -13,3 +13,4 @@ AutogluonModels/
 codex/val_ids.csv
 codex/research2_bursts_*.csv
 logs/*.log
+catboost_info/
