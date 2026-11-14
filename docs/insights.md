@@ -169,3 +169,10 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
   are ≈97% precise, so extra rows must come from typing, not from looser thresholds (ab_flag002 agrees).
 - (15 Nov 02:05, exp #116) Sep type confusions between cashback/phishing and ATO/sim are profile-consistent with the PREDICTED class (lure ₹1–10 rows labelled phishing; COLLECT just-under-round rows labelled cashback; own-phone new-SIM rows labelled ATO). These are event-level wrong-type filings (noise); on the clean test labels profile-based typing should be right, so the Sep oracle-typing gap (+0.08) overstates the real headroom. Exception: fraud-block rows, where type follows ID position (exploited by v11 block segmentation).
 - (15 Nov 01:55, exp #115) Legit-profile fraud rows have the identical receiver/txn-type mix in every class (MERCHANT .64, PAY .56, QR .37) = legit generator mix; e.g. LP mule rows pay merchants 64% of the time (impossible by definition). Class-random relabel; not ring-linked (receiver sharing at base rate).
+
+## hunt8 (15 Nov 02:00–) — legit-profile fraud is an i.i.d. relabel; no deterministic trace (exps #121–126)
+- Raw CSV strings: one writer and one float format for every row (trailing zeros stripped); digit-level chi² LP vs legit all null. Measured on str-dtype CSV.
+- `sender_account_age_days` = round(ts − (opened_on + u)) with a hidden per-account opening time u; all 1.83M rows (LP, GEN, legit, test) fit one u per sender. Balance, device age and SIM age have no cross-row chain (independent draws).
+- LP rows are relabelled existing legit rows (sender row counts equal the row-weighted legit distribution; insertion would add +1 row).
+- Selection is i.i.d.: Poisson per day, not tied to same-class GEN days, no sender/receiver/device clustering (obs/exp 1.005/.993), class drawn independently of the sender's other LP rows. Per-class LP vs legit AUC .48–.51 on every column.
+- ⇒ No rule, model or artefact can find LP rows in train, so none can in test. The leaders' edge must come from generated rows (detection, typing, October adaptations) or from public-split noise.
