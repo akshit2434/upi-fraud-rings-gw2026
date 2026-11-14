@@ -34,7 +34,7 @@ def tune_weights(P, y, iters=3, grid=None):
 import pandas as pd
 
 STRUCT_CLASSES = ['mule_account', 'velocity_bot', 'layering_chain', 'sim_swap', 'account_takeover', 'merchant_collusion', 'fake_cashback']
-CLEAN_POLICIES = ('none', 'iso7', 'isoall', 'iso7oof')
+CLEAN_POLICIES = ('none', 'iso7', 'isoall', 'iso7oof', 'iso7oofu')
 
 
 def get_conn(ids, until=None):
@@ -54,8 +54,10 @@ def clean_bad(lab, conn, policy, ids=None):
         return iso & np.isin(lab, [LABELS.index(c) for c in STRUCT_CLASSES])
     if policy == 'isoall':
         return iso
-    if policy == 'iso7oof':
-        ob = np.isin(ids, pd.read_parquet('data/oofbad80.parquet').txn_id.values)
+    if policy in ('iso7oof', 'iso7oofu'):  # oofu also drops legit-labelled rows with OOF P(legit) < 0.1 (unreported fraud)
+        ob = np.isin(ids, pd.read_parquet('data/oofbad80u.parquet' if policy == 'iso7oofu' else 'data/oofbad80.parquet').txn_id.values)
+        if policy == 'iso7oofu':
+            return (iso & np.isin(lab, [LABELS.index(c) for c in STRUCT_CLASSES])) | ((lab >= 0) & ob)
         return (iso & np.isin(lab, [LABELS.index(c) for c in STRUCT_CLASSES])) | ((lab > 0) & ob)
     return np.zeros(len(lab), bool)
 
