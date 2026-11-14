@@ -162,3 +162,8 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
 - Upper bound: a supervised x-fit model on Sep unflagged rows (all features + entity popularity) reaches AUC .505, top-100 precision .03
   (#102). Raw ID axes other than the device number carry nothing (#103). Residual fraud is noise with respect to every provided column,
   so the remaining gap must come from detecting and typing flaggable rows, not from legit-profile fraud.
+- **The October fraud 'excess' is train under-reporting (exp #108).** Label-independent generator fingerprints (fraud device block,
+  non-QR filled mismatch, v6 P≥.99) are 11.4–12.8% legit-labelled, flat by month → ~12% of all fraud is labelled legit in train.
+  Clean share 3.67%/0.88–0.90 = 4.08–4.18% matches the probe's 4.07%. There is no hidden October population to find: tail, cell,
+  near-miss, chain and fan scans of v12-unflagged Oct vs Sep find no excess ≥ ~20 rows (#104–107). On clean labels v12's flagged rows
+  are ≈97% precise, so extra rows must come from typing, not from looser thresholds (ab_flag002 agrees).
