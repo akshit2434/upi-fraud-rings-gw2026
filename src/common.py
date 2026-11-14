@@ -55,7 +55,7 @@ def clean_bad(lab, conn, policy, ids=None):
     if policy == 'isoall':
         return iso
     if policy in ('iso7oof', 'iso7oofu'):  # oofu also drops legit-labelled rows with OOF P(legit) < 0.1 (unreported fraud)
-        ob = np.isin(ids, pd.read_parquet('data/oofbad80u.parquet' if policy == 'iso7oofu' else 'data/oofbad80.parquet').txn_id.values)
+        ob = np.isin(ids, pd.read_parquet('data/oofbadfull_u.parquet' if policy == 'iso7oofu' else 'data/oofbad80.parquet').txn_id.values)
         if policy == 'iso7oofu':
             return (iso & np.isin(lab, [LABELS.index(c) for c in STRUCT_CLASSES])) | ((lab >= 0) & ob)
         return (iso & np.isin(lab, [LABELS.index(c) for c in STRUCT_CLASSES])) | ((lab > 0) & ob)
