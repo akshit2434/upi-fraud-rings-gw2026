@@ -117,3 +117,15 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
   (velocity, mule, velocity, layering, sim, ATO, phishing, qr, refund, cashback, loan, collusion). October's block is
   DV0473632–0474551 (564 test rows). Rows there that look legit are the 'injected' fraud; the device number is the only tell.
 - October adaptation: QR→P2P with blank qr_vpa_mismatch (140 rows, never in train) are qr_swap — LB +0.0098.
+
+## hunt5 (14 Nov night) — clean labels inside the fraud block, typing is the fixable loss
+- Train fraud-block labels are ~clean: inside each class sub-block, other-fraud labels are 1–3% and legit 12% (unreported).
+  So wrong-type noise is small; the sim↔ATO / velocity→mule / mule→layering 'swaps' seen on Sep are mostly MODEL errors
+  (profile overlap), not label noise. Measured: labels vs device-run class (`research/hunt5/a14,a16,a18.py`).
+- Block sim_swap rows look like ATO (new phone, old SIM); only rows/device (sim 43% single-row vs ATO 19.5%) and position separate them.
+  v6 calls Sep block sim rows ATO (47/62). Ordered segmentation of the block (`src/block_seg.py`) types Sep block fraud rows at .95.
+- Generated-fraud detection is complete: labelled fraud that v6 misses has legit's app-3.x share (.15) and IP (.20).
+  IP and app version are dead in October even on label-free marker rows (AUC .54/.52 vs .77/.74 in train).
+- Injected (legit-profile) rows: no signal on merchant popularity (weak, AUC ~.6 diffuse), pair repeats, money flow, degrees,
+  shared-phone owner, partial twins. The only tell found remains the device block.
+- October legit second-phone IDs are 100% dense (each ID used once) → October legit rows were not thinned after ID allocation.
