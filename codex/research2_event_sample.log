@@ -1,0 +1,4 @@
+FRAME 1058449 train 797867 component size max 60
+BUILD seconds 18.527507066726685
+{"mode": "row_sample", "validation": "same event-sampled September", "train_targets": 141254, "val_targets": 260440, "argmax": 0.4495826361352296, "xfit": [0.45489691047992964, 0.4539972773425818, 0.4582885415443511], "seconds": 128.04943704605103}
+{"mode": "event_sample", "validation": "same event-sampled September", "train_targets": 141181, "val_targets": 260440, "argmax": 0.44832272729232586, "xfit": [0.4505885269709619, 0.45694173969964774, 0.45508171130274305], "seconds": 234.74920201301575}

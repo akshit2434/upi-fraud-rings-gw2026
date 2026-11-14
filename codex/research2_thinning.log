@@ -1,0 +1,21 @@
+{
+  "full_training_events": 84,
+  "training_size_mean": 39.773809523809526,
+  "training_size_max": 60,
+  "test_sizes": [
+    31,
+    58,
+    32,
+    37,
+    29,
+    40,
+    42
+  ],
+  "test_mean": 38.42857142857143,
+  "loglik_p51": -71.81535012145032,
+  "loglik_best": -25.234974076110866,
+  "best_p_grid": 1.0,
+  "relative_likelihood_p51": 5.893858682552858e-21,
+  "prob_atleast58_one_event_at_p51_n60": 4.816714814420108e-15,
+  "caveat": "Assumes unchanged empirical pre-thinning event-size distribution; October event generation can drift."
+}

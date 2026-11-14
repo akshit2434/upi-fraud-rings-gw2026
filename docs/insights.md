@@ -102,3 +102,11 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
 - Oracle bound: perfect on full-density-connected fraud alone = 0.488 Sep. Isolated struct-class fraud (52–71% of those classes) is
   temporally uniform, id-free, entity-history-free and has legit's app-version mix → unlearnable from the provided columns.
 - Isolated phishing/qr/refund/loan/cashback carry fraud-like profiles (old-app 23–33%, just-under amounts 1999/4999/9999) → remaining headroom.
+
+## 14 Nov afternoon (exps #52–57)
+- LB probes: mule test F1 ≈ .49 (Sep .40), velocity ≈ .34 (Sep .48). Recall can't be inferred without precision.
+- Test sampling: legit traffic is row-thinned (~51%), but **fraud events appear whole** (about half of events kept intact). Event-preserving
+  training frames did not help (−0.0015). v6 already flags nearly every visible October event row.
+- Isolated struct fraud is injected at a flat 1.31–1.32% of rows every month, has legit's feature/app-version profile, and is very likely
+  present (as fraud) in test. No column separates it (combined AUC .566).
+- EM prior shift Sep→Oct: velocity ×0.43, mule ×1.42, refund ×1.6, cashback ×2.35, loan ×4.1 — but bimodal probs mean re-weighting moves ~0 rows.
