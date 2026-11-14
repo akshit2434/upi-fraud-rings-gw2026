@@ -60,7 +60,7 @@ lab0 = meta._label.map(L2I).fillna(-1).astype(int).values
 res = {}
 if not a.novalid:
     trn = ((meta._is_test == 0) & meta._month.isin(['2026-07', '2026-08'])).values
-    bad = clean_bad(lab0, get_conn(ids, until='2026-09-01'), a.clean)
+    bad = clean_bad(lab0, get_conn(ids, until='2026-09-01'), a.clean, ids)
     lab = apply_relabel(lab0, ids, a.relabel, mask=trn)
     mask, w = train_mask(lab, trn, bad, a.tseed)
     pred = fit(X[mask], lab[mask], w, a.tseed)
@@ -75,7 +75,7 @@ if not a.novalid:
     print(a.tag, 'VAL', res, f'{time.time()-t0:.0f}s', flush=True)
 if a.full:
     trn = (meta._is_test == 0).values
-    bad = clean_bad(lab0, get_conn(ids), a.clean)
+    bad = clean_bad(lab0, get_conn(ids), a.clean, ids)
     lab = apply_relabel(lab0, ids, a.relabel, mask=trn)
     mask, w = train_mask(lab, trn, bad, a.tseed)
     pred = fit(X[mask], lab[mask], w, a.tseed)

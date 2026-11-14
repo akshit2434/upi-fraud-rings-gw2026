@@ -34,7 +34,7 @@ def tune_weights(P, y, iters=3, grid=None):
 import pandas as pd
 
 STRUCT_CLASSES = ['mule_account', 'velocity_bot', 'layering_chain', 'sim_swap', 'account_takeover', 'merchant_collusion', 'fake_cashback']
-CLEAN_POLICIES = ('none', 'iso7', 'isoall')
+CLEAN_POLICIES = ('none', 'iso7', 'isoall', 'iso7oof')
 
 
 def get_conn(ids, until=None):
@@ -43,8 +43,9 @@ def get_conn(ids, until=None):
     return pd.read_parquet(path).set_index('txn_id').conn.reindex(ids).fillna(False).values.astype(bool)
 
 
-def clean_bad(lab, conn, policy):
-    """Rows to drop from training. lab: int labels (-1 = unlabelled)."""
+def clean_bad(lab, conn, policy, ids=None):
+    """Rows to drop from training. lab: int labels (-1 = unlabelled).
+    iso7oof = iso7 + fraud rows whose week-blocked OOF P(legit) > 0.8 (data/oofbad80.parquet; legit-profile rows, exp #93)."""
     from features import LABELS
     if policy not in CLEAN_POLICIES:
         raise ValueError(f'unknown clean policy {policy}')
@@ -53,6 +54,9 @@ def clean_bad(lab, conn, policy):
         return iso & np.isin(lab, [LABELS.index(c) for c in STRUCT_CLASSES])
     if policy == 'isoall':
         return iso
+    if policy == 'iso7oof':
+        ob = np.isin(ids, pd.read_parquet('data/oofbad80.parquet').txn_id.values)
+        return (iso & np.isin(lab, [LABELS.index(c) for c in STRUCT_CLASSES])) | ((lab > 0) & ob)
     return np.zeros(len(lab), bool)
 
 
