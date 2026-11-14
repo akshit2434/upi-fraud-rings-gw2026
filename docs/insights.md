@@ -129,3 +129,6 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
 - Injected (legit-profile) rows: no signal on merchant popularity (weak, AUC ~.6 diffuse), pair repeats, money flow, degrees,
   shared-phone owner, partial twins. The only tell found remains the device block.
 - October legit second-phone IDs are 100% dense (each ID used once) → October legit rows were not thinned after ID allocation.
+- Typing headroom (exp #81): oracle types on v6-flagged Sep rows → .539 (from .459); a dedicated type model can't get it (#82),
+  row-level type noise ≲3.5% (#83). Outside the block the confusable pairs (cashback/phishing, ATO/sim) overlap in all features.
+- Upload candidate from hunt5: `submissions/v11_blockseg.csv` (v10 + block segmentation, 107 rows), est. +0.006…+0.012.
