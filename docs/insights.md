@@ -132,3 +132,12 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
 - Typing headroom (exp #81): oracle types on v6-flagged Sep rows → .539 (from .459); a dedicated type model can't get it (#82),
   row-level type noise ≲3.5% (#83). Outside the block the confusable pairs (cashback/phishing, ATO/sim) overlap in all features.
 - Upload candidate from hunt5: `submissions/v11_blockseg.csv` (v10 + block segmentation, 107 rows), est. +0.006…+0.012.
+
+## hunt6 (15 Nov 00:00–) — legit-profile fraud is a constant-rate relabel of the main legit path
+- Sep51 LP rows (non-block, isolated, model P(fraud)<.05) vs model-legit legit: every raw column, accounts/merchants join,
+  entity-activity, own-profile deviation, gap, P2P-graph feature has AUC .48–.52; combined GBM .568 with zero precision at the top.
+  The legit P2P graph itself is random (no common neighbours, no reverse edges) — there is no community structure to break.
+- LP rate is flat 2.3–2.4% of main-path rows regardless of merchant popularity; halves at mega-merchants (>5k rows) and is ~0 on
+  legit second phones → those are separate legit generator paths that were never relabelled. No rule can exceed ~2.4% precision.
+- October has no new row-level population among model-legit rows (adversarial AUC .507 once amount/balance festival drift is removed).
+- txn_id is not a hash of a counter or a seeded RNG stream (chance-level hits) → no generation order.
