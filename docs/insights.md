@@ -153,3 +153,12 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
 - Ceiling: perfect on all non-LP Sep fraud while calling LP rows legit = .585 Sep macro-F1. Test (4.1% fraud, 43.5 marker rows/10k
   vs train 47) has the same generated share as Sep, so LB .634 is above that ceiling. Either leaders recover LP rows in a way we have
   not found (no row/entity/graph/time/ID axis works), or they get typing/precision near-perfect and benefit from public-split noise. Unresolved hypothesis.
+
+## hunt7 (15 Nov 00:20–00:50) — excess / distribution-shift view of legit-profile fraud (all negative)
+- An excess detector (classifier two-sample test, Aug legit vs Sep unflagged) scores Sep's unflagged fraud at AUC .49. Month-to-month drift
+  (receiver traffic growth, amount rank, a festival mega-merchant in Oct) dominates every C2ST (AUC .69–.84) (exp #97).
+- Entities that carry legit-profile fraud get no more rows than their history predicts (AUC .46–.53, #98). Tiny linked structures
+  (bursts, same-amount pairs, fan-in, hops) occur at the same rate in Oct-unflagged as in Sep51-unflagged (#99).
+- Upper bound: a supervised x-fit model on Sep unflagged rows (all features + entity popularity) reaches AUC .505, top-100 precision .03
+  (#101). Raw ID axes other than the device number carry nothing (#102). Residual fraud is noise with respect to every provided column,
+  so the remaining gap must come from detecting and typing flaggable rows, not from legit-profile fraud.
