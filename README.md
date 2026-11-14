@@ -1,6 +1,6 @@
 # UPI Fraud Rings — ML Gradient Wars 2026
 
-12-class per-transaction fraud labelling (macro-F1). Code for our submissions.
+12-class per-transaction fraud labelling (macro-F1). Code for our submissions. Approach summary: `docs/APPROACH.md`.
 
 ## Setup
 ```
