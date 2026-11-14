@@ -8,7 +8,7 @@ uv venv .venv --python 3.12 && uv pip install --python .venv/bin/python pandas p
 # put the competition files in data/upi-fraud-rings/ (train.csv, test.csv, accounts.csv, merchants.csv)
 ```
 
-## Reproduce the best public upload (`v11_blockseg`, public 0.5044)
+## Reproduce the best public upload (`v12_tailfix`, public 0.5117)
 Built with features v3 = git commit `559e3a3`. Exact commands: `docs/experiments.md` row #37.
 ```
 python src/connectivity.py && python src/connectivity.py --until 2026-09-01   # label-structure flags (data/conn*.parquet)
@@ -18,6 +18,7 @@ python src/bag_val.py --seeds 1,2,3 --relabel data/relabel_R1.parquet ...      #
 python src/make_sub.py --pred preds/v6_R1_bag_test_P.npy --val_P /tmp/P_bag4_R1.npy --wmode full --out v6_R1_bag   # public 0.4685
 python src/oct_rules.py --base submissions/v6_R1_bag.csv --rules QAABCD --out v10_v6_octrules                      # public 0.4894
 python src/make_blockseg.py --base submissions/v10_v6_octrules.csv --out submissions/v11_blockseg.csv               # public 0.5044
+python src/make_tailfix.py --base submissions/v11_blockseg.csv --out submissions/v12_tailfix.csv                # public 0.5117
 ```
 `oct_rules.py` = October rules (QR->P2P blank mismatch, device-ID fraud block); `make_blockseg.py` re-types the October fraud
 device block by ordered segmentation (`src/block_seg.py`). Both are coded rules on provided columns; no hand labels.
