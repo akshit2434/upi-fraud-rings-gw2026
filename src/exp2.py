@@ -16,6 +16,7 @@ ap.add_argument('--iters', type=int, default=400); ap.add_argument('--lr', type=
 ap.add_argument('--leaves', type=int, default=63); ap.add_argument('--depth', type=int, default=8)
 ap.add_argument('--extra', default='', help='comma list of extra feature blocks: graph')
 ap.add_argument('--full', action='store_true'); ap.add_argument('--novalid', action='store_true')
+ap.add_argument('--frame', default='', help="'full' = unthinned train context (val on the same frame)")
 ap.add_argument('--threads', type=int, default=10); ap.add_argument('--tag', required=True)
 a = ap.parse_args()
 L2I = {l: i for i, l in enumerate(LABELS)}
@@ -53,7 +54,7 @@ def train_mask(lab, trn, bad, seed):
 
 
 t0 = time.time()
-X, meta = load(a.tseed)
+X, meta = load('full' if a.frame == 'full' else a.tseed)
 ids = meta._txn_id.values
 lab0 = meta._label.map(L2I).fillna(-1).astype(int).values
 res = {}
@@ -63,7 +64,7 @@ if not a.novalid:
     lab = apply_relabel(lab0, ids, a.relabel, mask=trn)
     mask, w = train_mask(lab, trn, bad, a.tseed)
     pred = fit(X[mask], lab[mask], w, a.tseed)
-    if a.tseed == 0:
+    if a.tseed == 0 or a.frame == 'full':
         X0, m0 = X, meta
     else:
         X0, m0 = load(0)

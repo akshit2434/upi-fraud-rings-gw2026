@@ -392,7 +392,7 @@ def load_cached(seed, ver=None, build_if_missing=True):
         if not build_if_missing or (ver and ver != FEATURE_VERSION):
             raise FileNotFoundError(path)
         tr, te, acc, mer = load()
-        df = sample_frame(tr, te, seed)
+        df = sample_frame(tr, te, 0, rate=1.0) if seed == 'full' else sample_frame(tr, te, seed)  # 'full' = no thinning
         X = build_features(df, acc, mer)
         X['_label'] = df.label.values; X['_month'] = df.timestamp.str[:7].values
         X['_is_test'] = df._is_test.values; X['_txn_id'] = df.txn_id.values
