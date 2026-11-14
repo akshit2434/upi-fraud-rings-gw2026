@@ -141,3 +141,10 @@ Official problem statement: `data/upi-fraud-rings/PROBLEM_STATEMENT.md`. Event i
   legit second phones → those are separate legit generator paths that were never relabelled. No rule can exceed ~2.4% precision.
 - October has no new row-level population among model-legit rows (adversarial AUC .507 once amount/balance festival drift is removed).
 - txn_id is not a hash of a counter or a seeded RNG stream (chance-level hits) → no generation order.
+
+## 15 Nov 00:30 — where the gap to the leaders is (main session)
+- Test has ~10,630 fraud rows (4.08% × 260,582); v12 flags 4,003. ~6.6k fraud rows are unflagged (≈ the injected/legit-profile share).
+- Week-blocked OOF (/tmp/oof_s0.npy, iso7-trained LGB): 59–75% of every fraud class has OOF P(legit) > 0.95. Strongly bimodal: the legit-profile part is the same size in every class, merchant_collusion highest (73%).
+- Device type of Sep fraud: own phone 86–94% for all classes except ATO (70% own, 26% fraud block) and velocity (60% own, 36% block). Fraud device block ≠ "generated": generated mule/layering/etc. live on own phones.
+- Oct velocity_bot calls are 100% on train-block devices reused in Oct (device farms: one device, many senders, integer amounts, login_to_txn 1–6 s, merchant PAY).
+- Ceiling arithmetic: perfect detection + typing of only the flaggable ~4k rows → class recall ≈ .38, F1 ≈ .55, macro ≈ .59. Leaders (0.63) must catch some legit-profile fraud; the 0.54–0.55 pack is consistent with near-perfect generated-fraud typing.
