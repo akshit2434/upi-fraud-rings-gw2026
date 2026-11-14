@@ -39,7 +39,7 @@ def main():
             print('file inputs:', p.locator('input[type=file]').count())
             print('buttons:', [t.strip()[:40] for t in p.locator('button').all_inner_texts() if t.strip()][:40])
             txt = p.locator('body').inner_text()
-            print('--- text ---'); print(txt[:int(sys.argv[3]) if len(sys.argv) > 3 else 3000])
+            print('--- text ---'); n = [x for x in sys.argv[3:] if x.isdigit()]; print(txt[:int(n[0]) if n else 3000])
 
 
 if __name__ == '__main__':
