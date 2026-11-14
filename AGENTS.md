@@ -18,7 +18,7 @@ Goal: win the 48h round (13 Nov 10:00 → 15 Nov 10:00 IST). Metric: macro-F1 ov
 - Run from the project root. Logs → `logs/`, test probabilities → `preds/` (always with `_test_ids.csv` + `_manifest.json`), uploads → `submissions/`.
 - Feature caches are version-keyed: `/tmp/feat_<FEATURE_VERSION>_s<seed>.parquet` via `features.load_cached(seed)`.
   Bump `FEATURE_VERSION` in `src/features.py` whenever feature semantics change. v3 caches = code at git commit 559e3a3 (submissions ≤ v6).
-- Code is under git (local only). Commit before every submission; note the commit hash in `docs/experiments.md`.
+- Code is under git, remote = private GitHub repo akshit2434/upi-fraud-rings-gw2026. Commit AND push after every meaningful change and before every submission; note the commit hash in `docs/experiments.md`. Never commit data/, preds/, submissions/.
 
 ## Code map
 - `src/features.py` — `load`, `sample_frame` (51% subsample of train + full test), `build_features` (edge-safe),
